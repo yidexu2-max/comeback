@@ -68,10 +68,9 @@
             text-indent: 2em;
         }
 
-        /* 封面 - 纯红色，只有文字，无网格 */
+        /* 封面 - 纯红色背景，只有文字，无网格 */
         .cover-page {
-            background: #6a0a0a;
-            background: linear-gradient(145deg, #7a1a1a 0%, #5a0a0a 100%);
+            background: #cc0000;
             color: #e8c88a;
             display: flex;
             flex-direction: column;
@@ -203,19 +202,6 @@
             font-weight: 900;
         }
 
-        /* 补充页 - 保持与基础相同的横线样式 */
-        .supplement-page {
-            background: #fef8e7;
-            background-image: repeating-linear-gradient(
-                transparent 0px,
-                transparent 43px,
-                rgba(100, 70, 40, 0.2) 43px,
-                rgba(100, 70, 40, 0.2) 44px
-            );
-            border-left: 6px solid #c4a060;
-            color: #3a2a1a;
-        }
-
         /* 被划掉的文字 */
         .strikethrough {
             text-decoration: line-through;
@@ -296,12 +282,12 @@
 <div class="diary-container">
     <div id="diaryPages"></div>
     <div class="page-controls-bar">
-        <div class="page-indicator" id="pageIndicator">第 1 / 26 页</div>
+        <div class="page-indicator" id="pageIndicator">第 1 / 21 页</div>
         <button onclick="changePage(-1)">◀ 上一页</button>
         <button onclick="changePage(1)">下一页 ▶</button>
         <div class="jump-input">
             <span>跳转</span>
-            <input type="number" id="pageNum" min="1" max="26" value="1">
+            <input type="number" id="pageNum" min="1" max="21" value="1">
             <button class="jump-btn" onclick="jumpToPage()">GO</button>
         </div>
     </div>
@@ -310,7 +296,6 @@
 
 <script>
     // ==================== 日记内容 ====================
-    // 封面内容单独处理
     // 主线日记 第2-21页（按行分割，每行独立，保持左对齐）
     const mainDiaryLines = [
         // 第2页
@@ -352,23 +337,14 @@
         // 第20页（stage5，抖动效果）
         ["如果你在看这本日记。", "去那个网页。", "照片里的那个位置。", "有东西在等你。", "不要翻最后一页。", "不要翻。", "不要翻。", "不要——"],
         // 第21页（stage6，黑底红字）
-        ["你也会站在那个位置。", "穿上红裙子。", "笑一下。", "最后一天。", "网址：", "www.back-to-1997.com"]
+        ["你也会站在那个位置。", "穿上红裙子。", "笑一下。", "最后一天。"]
     ];
 
-    // 补充页 第22-26页
-    const supplementLines = [
-        ["📎 念念的补充笔记（一）", "我查了村里的族谱。", "爷爷那一辈，有一个人叫“阿归”。", "他是爷爷的弟弟。", "族谱上写着：", "“1948年，中元节，于村口老槐树下走失，不知所踪。”", "“最后一天”不是日期。是一个人的名字。", "族谱最后一行写着：“小晚，1948年中元节，于老槐树下走失。”", "下一页被人撕掉了。撕掉的那页原本写的是什么？"],
-        ["📎 念念的补充笔记（二）", "我画了一张图，把纸人的位置记下来。", "五个纸人围着树。", "四个有名字的朝内，面朝树。", "空白的朝外，面朝外。", "为什么空白的朝外？", "是不是它要“出去”？还是它要“等人来”？", "妹妹说，那个姐姐等了好久。等的是谁？"],
-        ["📎 念念的补充笔记（三）", "我打听到了一些关于小晚的事。", "1948年，小晚7岁。", "她爸妈说去镇上买东西，让她在老槐树下等着。", "他们再也没有回来。", "她在树下等了一夜。第二天，她也不见了。", "没有人去找她。", "村里最老的人说过一句话：", "“那棵树下面没有东西。那棵树就是小晚。她自己把自己困在那里了。”", "小晚的爷爷在她失踪前几个月去世了。", "她是不是在等爷爷？"],
-        ["📎 念念的补充笔记（四）", "我找到了一些关于小晚爷爷的线索。", "小晚的爷爷叫老陈。", "他走的那天，小晚送他到村口。", "他说：“小晚，爷爷去那边看看，很快就回来。”", "他再也没有回来。", "但有人说，老陈死后，有人在老槐树下见过他。", "不是人。是影子。", "他的影子站在树下，面朝村里，一动不动。", "他在等什么？还是说——他一直在？"],
-        ["📎 念念的补充笔记（五）", "这些事是我后来才想明白的。", "1997年8月15日，归途执行。", "它带走了我的爸妈和妹妹。留下了我。", "我被留下了。", "归途给了我一个信息：写日记，否则就会忘记最重要的人。", "我害怕忘记妹妹的脸。所以我写了。", "这是我的日记。你正在看的这本。", "有人说，如果你去那棵树下，对小晚说“你不是一个人”，她就会停下来。", "我不知道。我没有试过。我害怕。"]
-    ];
-
-    // 构建所有页面
+    // 构建所有页面：封面 + 21页主线 = 22页
     const allPages = [];
     // 第1页：封面
     allPages.push({ type: 'cover', lines: [] });
-    // 第2-21页：主线日记
+    // 第2-22页：主线日记
     for (let i = 0; i < mainDiaryLines.length; i++) {
         let stage = '';
         let pageNum = i + 2;
@@ -381,10 +357,6 @@
         else stage = 'normal';
         allPages.push({ type: stage, lines: mainDiaryLines[i] });
     }
-    // 第22-26页：补充页
-    for (let i = 0; i < supplementLines.length; i++) {
-        allPages.push({ type: 'supplement', lines: supplementLines[i] });
-    }
 
     let currentPage = 1;
     const totalPages = allPages.length;
@@ -395,10 +367,6 @@
         // 第19页处理划掉的句子
         if (pageNum === 19 && line === '“小晚，爷爷在。”') {
             displayLine = `<span class="strikethrough">“小晚，爷爷在。”</span>`;
-        }
-        // 第21页处理网址
-        if (pageNum === 21 && line === 'www.back-to-1997.com') {
-            displayLine = `<span style="color: #ff8888; text-decoration: underline;">www.back-to-1997.com</span>`;
         }
         // 第20页添加抖动效果
         if (isStage5) {
@@ -416,8 +384,6 @@
         
         if (isCover) {
             baseClass = 'cover-page';
-        } else if (page.type === 'supplement') {
-            baseClass = 'supplement-page';
         } else if (page.type === 'stage1') {
             baseClass = 'stage1';
         } else if (page.type === 'stage2') {
@@ -437,10 +403,8 @@
         let pageTypeName = '';
         if (currentPage === 1) {
             pageTypeName = '封面';
-        } else if (currentPage >= 2 && currentPage <= 21) {
-            pageTypeName = `第 ${currentPage - 1} 页`;
         } else {
-            pageTypeName = `补充笔记 ${currentPage - 21}`;
+            pageTypeName = `第 ${currentPage - 1} 页`;
         }
         
         let contentHtml = '';
