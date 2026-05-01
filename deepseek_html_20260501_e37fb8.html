@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>归途 · 念念的日记</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            font-family: '华文楷书', '楷体', 'KaiTi', ' cursive';
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .diary-container {
+            max-width: 720px;
+            width: 100%;
+            background: #2a2418;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 25px 30px 30px 30px;
+        }
+
+        /* 基础日记页面 - 统一横线背景 */
+        .diary-page {
+            background: #fef8e7;
+            min-height: 600px;
+            padding: 30px 35px 50px 35px;
+            border-radius: 4px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+            line-height: 44px;
+            font-size: 17px;
+            font-family: '华文楷书', '楷体', 'KaiTi', cursive;
+            color: #1a1a1a;
+            background-image: repeating-linear-gradient(
+                transparent 0px,
+                transparent 43px,
+                rgba(100, 70, 40, 0.2) 43px,
+                rgba(100, 70, 40, 0.2) 44px
+            );
+            transition: all 0.2s ease;
+        }
+
+        /* 文字行 - 首行缩进两字符 */
+        .diary-line {
+            min-height: 44px;
+            line-height: 44px;
+            font-size: inherit;
+            letter-spacing: 0.5px;
+            color: inherit;
+            text-align: left;
+            width: 100%;
+            white-space: normal;
+            word-break: break-word;
+            font-family: '华文楷书', '楷体', 'KaiTi', cursive;
+            font-weight: inherit;
+            text-indent: 2em;
+        }
+
+        /* 封面 - 纯红色，只有文字，无网格 */
+        .cover-page {
+            background: #6a0a0a;
+            background: linear-gradient(145deg, #7a1a1a 0%, #5a0a0a 100%);
+            color: #e8c88a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 600px;
+            background-image: none;
+        }
+        .cover-page .cover-title {
+            font-size: 64px;
+            font-family: '华文楷书', '楷体', 'KaiTi', cursive;
+            letter-spacing: 16px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+        }
+        .cover-page .cover-sub {
+            font-size: 20px;
+            font-family: '华文楷书', '楷体', 'KaiTi', cursive;
+            letter-spacing: 4px;
+            opacity: 0.8;
+        }
+
+        /* 第16页：底色开始变红（浅红） */
+        .diary-page.stage1 {
+            background: #f5e0d0;
+            color: #3a2a1a;
+        }
+        .diary-page.stage1 .diary-line {
+            color: #3a2a1a;
+        }
+
+        /* 第17页：底色更红 */
+        .diary-page.stage2 {
+            background: #e8c8b0;
+            color: #5a3020;
+            font-size: 18px;
+        }
+        .diary-page.stage2 .diary-line {
+            color: #5a3020;
+            font-size: 18px;
+        }
+
+        /* 第18页：红褐色底 */
+        .diary-page.stage3 {
+            background: #d0a880;
+            color: #7a3520;
+            font-size: 19px;
+            font-weight: 500;
+        }
+        .diary-page.stage3 .diary-line {
+            color: #7a3520;
+            font-size: 19px;
+            font-weight: 500;
+        }
+
+        /* 第19页：暗红底，深红字 */
+        .diary-page.stage4 {
+            background: #a87050;
+            color: #aa4433;
+            font-size: 20px;
+            font-weight: 600;
+            position: relative;
+        }
+        .diary-page.stage4 .diary-line {
+            color: #aa4433;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        /* 污渍效果 */
+        .diary-page.stage4::after {
+            content: '';
+            position: absolute;
+            bottom: 50px;
+            right: 35px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(ellipse, rgba(100,40,20,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* 第20页：深红底，血红字，抖动 */
+        .diary-page.stage5 {
+            background: #6a3a2a;
+            color: #dd5544;
+            font-size: 21px;
+            font-weight: 700;
+            position: relative;
+        }
+        .diary-page.stage5 .diary-line {
+            color: #dd5544;
+            font-size: 21px;
+            font-weight: 700;
+        }
+        .diary-page.stage5::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(180,60,40,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        /* 抖动动画 */
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(1px, -1px); }
+            60% { transform: translate(-1px, -1px); }
+            80% { transform: translate(1px, 1px); }
+            100% { transform: translate(0, 0); }
+        }
+        .shake-text {
+            display: inline-block;
+            animation: shake 0.15s infinite;
+        }
+
+        /* 第21页：黑底红字，最大最粗 */
+        .diary-page.stage6 {
+            background: #0a0a0a;
+            color: #ff4444;
+            font-size: 23px;
+            font-weight: 900;
+        }
+        .diary-page.stage6 .diary-line {
+            color: #ff4444;
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+        /* 补充页 - 保持与基础相同的横线样式 */
+        .supplement-page {
+            background: #fef8e7;
+            background-image: repeating-linear-gradient(
+                transparent 0px,
+                transparent 43px,
+                rgba(100, 70, 40, 0.2) 43px,
+                rgba(100, 70, 40, 0.2) 44px
+            );
+            border-left: 6px solid #c4a060;
+            color: #3a2a1a;
+        }
+
+        /* 被划掉的文字 */
+        .strikethrough {
+            text-decoration: line-through;
+            text-decoration-thickness: 2px;
+            text-decoration-color: #aa4a3a;
+            text-decoration-style: wavy;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            font-size: 12px;
+            color: #8a7a60;
+            font-family: monospace;
+            opacity: 0.5;
+        }
+
+        /* 右下角控制栏 */
+        .page-controls-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid #5a4a35;
+        }
+        .page-controls-bar button {
+            background: #3a2a1a;
+            border: 1px solid #8a6a40;
+            color: #c4a86b;
+            padding: 6px 14px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .page-controls-bar button:hover {
+            background: #5a4a35;
+            color: #e8c88a;
+        }
+        .page-indicator {
+            color: #a09070;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .jump-input {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .jump-input input {
+            background: #2a2418;
+            border: 1px solid #5a4a35;
+            padding: 5px 8px;
+            color: #c4a86b;
+            font-family: monospace;
+            width: 55px;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .jump-input span {
+            color: #a09070;
+            font-size: 0.8rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            color: #5a4a35;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+<div class="diary-container">
+    <div id="diaryPages"></div>
+    <div class="page-controls-bar">
+        <div class="page-indicator" id="pageIndicator">第 1 / 26 页</div>
+        <button onclick="changePage(-1)">◀ 上一页</button>
+        <button onclick="changePage(1)">下一页 ▶</button>
+        <div class="jump-input">
+            <span>跳转</span>
+            <input type="number" id="pageNum" min="1" max="26" value="1">
+            <button class="jump-btn" onclick="jumpToPage()">GO</button>
+        </div>
+    </div>
+</div>
+<footer>红色日记本 · 念念 · 1997年8月</footer>
+
+<script>
+    // ==================== 日记内容 ====================
+    // 封面内容单独处理
+    // 主线日记 第2-21页（按行分割，每行独立，保持左对齐）
+    const mainDiaryLines = [
+        // 第2页
+        ["妈妈从镇上回来，带了一本新日记本给我。", "红色封面，我很喜欢。"],
+        // 第3页
+        ["今天在村口看到一棵很大的槐树。", "妹妹说那棵树在招手。"],
+        // 第4页
+        ["晚上做了个梦。", "梦到我站在那棵槐树下，", "穿着红裙子。", "但我没有红裙子。"],
+        // 第5页
+        ["今天拍了一张全家福。", "我们站在老槐树下，", "夕阳照在我们背上。", "照片洗出来之后，", "我们所有人的脸都看不清。"],
+        // 第6页
+        ["妹妹今天一个人在院子里玩，", "我听到她在跟谁说话。", "我问她在跟谁说话，", "她说“跟那个姐姐”。", "我问她姐姐长什么样，", "她说“没有脸，但是她在笑”。", "我问她姐姐穿什么衣服，", "她说“红裙子”。"],
+        // 第7页
+        ["那张全家福出现在客厅墙上。", "我明明记得爸爸把照片收在抽屉里了。", "妹妹说是“那个姐姐”挂的。"],
+        // 第8页
+        ["晚上又梦到了。", "这次我记得更多。", "我站在老槐树下，穿着红裙子，", "身边还有一个人。", "那个人也是小女孩，", "也穿着红裙子。", "她转过头看我——她没有脸。", "我醒了。", "床尾放着一件红裙子。", "妈妈说是给我买的。", "但我从来没有跟妈妈说过", "我想要红裙子。"],
+        // 第9页
+        ["妈妈今天又说梦见那个红衣小女孩了。", "她站在村口老槐树下，", "朝妈妈招手。", "妈妈说她的脸……没有五官。", "但妈妈描述的时候一直在笑，", "笑得很奇怪。", "我问妈妈你在笑什么，", "妈妈说“我也不知道，", "就是觉得应该笑”。", "爸爸今天脸色很不好。"],
+        // 第10页
+        ["爸爸去镇上请了先生。", "先生姓陈，年纪很大了。", "他在院子里转了一圈，", "在老槐树下站了很久。", "然后他跟爸爸说了一些话，", "爸爸的脸变白了。", "我问先生怎么了，", "先生看着我说：", "“你是最大的孩子？”", "我说是。", "他说：“保护好妹妹。”", "然后他就走了。"],
+        // 第11页
+        ["先生说的话我写在日记里：", "他说我们一家被“盯上了”，", "根源在爷爷那辈。", "爷爷当年在这棵树下做过一件事——", "他答应了一个女孩", "“会回来接她”，", "但没有回来。", "那个女孩一直在等。", "先生让我们8月15日天黑前", "必须离开村子。", "我问先生那个东西叫什么，", "先生说了一个词——“归途”。", "我问是什么意思，", "先生说：“走了的人会回来。”"],
+        // 第12页
+        ["今天收拾东西的时候，", "发现那张全家福又出现了。", "在客厅墙上，但我们没有挂。", "照片里的我们站在夕阳下，", "穿着跟今天一模一样的衣服。", "妹妹的红裙子是昨天刚买的。", "但照片里妹妹穿的就是这件红裙子。", "这张照片是谁拍的？", "什么时候拍的？", "我翻到照片背面——", "上面写着“1997.8.15 最后一天”。", "跟日记本封面上的字是一样的笔迹。", "但那是我的笔迹。", "我没有写过。"],
+        // 第13页
+        ["妹妹在院子里玩，", "我去叫她吃饭。", "她蹲在地上，", "面前摆着几个纸人。", "我问她在干什么，", "她说：“姐姐，", "它们说今晚会多一个人。”", "我拿起纸人看，", "背面写着字：", "念念、陈明远、王秀兰、陈小雨。", "四个名字，我们一家四口。", "还有第五个纸人，空白的。", "妹妹说：", "“这个纸人是给那个姐姐的。", "她说她等了好久。”", "我问妹妹那个姐姐在哪里，", "妹妹指了指老槐树的方向。"],
+        // 第14页
+        ["睡不着。", "听到妹妹在楼下笑。", "但妹妹在我身边睡觉。", "我走到楼梯口，", "楼下的笑声停了。", "然后是脚步声，从楼梯上来。", "我跑回床上，", "把被子盖过头顶。", "脚步声经过我的房间，停了。", "门没有开。", "脚步声继续，", "走向妹妹的房间。", "妹妹的房间里传来一个声音：", "“来，穿上这件红裙子。”"],
+        // 第15页
+        ["早上起来，", "妹妹穿着红裙子。", "我问她谁给她穿的，", "她说“姐姐给我穿的”。", "我问是哪个姐姐，", "她说“就是那个没有脸的姐姐”。", "我问妈妈，", "妈妈说妹妹自己穿的。", "但红裙子昨天在衣柜最上面，", "妹妹够不到。", "爸爸说今天天黑前必须走。", "我们中午就出发。"],
+        // 第16页（stage1：开始变红）
+        ["爸爸去发动车子。", "车子发动不了。", "修车的人说要明天才能来。", "爸爸的脸很白。", "妈妈说没关系，", "明天走也可以。", "但先生说必须今天。", "我说我们走路去镇上。", "爸爸说太远了，", "妹妹走不动。", "妹妹在院子里玩纸人。", "纸人又多了几个。", "妹妹说：", "“那个姐姐说，", "如果你们不走，", "她就可以留下来陪我了。”"],
+        // 第17页（stage2）
+        ["我不应该打开那张照片的背面。", "我不应该看“最后一天”那四个字。", "那不是日期。那是名字。", "四个字是一个人的名字。", "最后一天。", "最后一天是谁？", "我查了村里的族谱。", "爷爷那一辈，", "有一个人叫“阿归”。", "他是爷爷的弟弟。", "1948年，", "他跟爷爷一起在老槐树下——", "然后他消失了。", "爷爷说他“走了”。", "走了的人会回来。", "归途。", "（页脚小字：1948年的纸人少了一个）"],
+        // 第18页（stage3）
+        ["妹妹不见了。", "我们找了两个小时。", "最后在老槐树下找到她。", "她穿着红裙子，", "站在树下，面朝树。", "我叫她，她不动。", "我走过去，她转过身——", "她笑了。", "但她的笑不像她。", "她的眼睛里有一个小女孩的影子。", "那个小女孩没有脸。", "妹妹说：", "“姐姐，", "她问你愿不愿意留下来陪她。”"],
+        // 第19页（stage4，有划掉的字）
+        ["我答应了。", "但我后悔了。", "不是陪我妹妹。", "是陪她。", "那个没有脸的女孩。", "她把妹妹还给了我们。", "但她带走了——我。", "我写不下去了。", "我在写这本日记。", "但我不知道我是谁。", "我是念念吗？", "还是我是她？", "“小晚，爷爷在。”", "这不是我写的字。", "这笔迹不是我的。", "是谁写的？"],
+        // 第20页（stage5，抖动效果）
+        ["如果你在看这本日记。", "去那个网页。", "照片里的那个位置。", "有东西在等你。", "不要翻最后一页。", "不要翻。", "不要翻。", "不要——"],
+        // 第21页（stage6，黑底红字）
+        ["你也会站在那个位置。", "穿上红裙子。", "笑一下。", "最后一天。", "网址：", "www.back-to-1997.com"]
+    ];
+
+    // 补充页 第22-26页
+    const supplementLines = [
+        ["📎 念念的补充笔记（一）", "我查了村里的族谱。", "爷爷那一辈，有一个人叫“阿归”。", "他是爷爷的弟弟。", "族谱上写着：", "“1948年，中元节，于村口老槐树下走失，不知所踪。”", "“最后一天”不是日期。是一个人的名字。", "族谱最后一行写着：“小晚，1948年中元节，于老槐树下走失。”", "下一页被人撕掉了。撕掉的那页原本写的是什么？"],
+        ["📎 念念的补充笔记（二）", "我画了一张图，把纸人的位置记下来。", "五个纸人围着树。", "四个有名字的朝内，面朝树。", "空白的朝外，面朝外。", "为什么空白的朝外？", "是不是它要“出去”？还是它要“等人来”？", "妹妹说，那个姐姐等了好久。等的是谁？"],
+        ["📎 念念的补充笔记（三）", "我打听到了一些关于小晚的事。", "1948年，小晚7岁。", "她爸妈说去镇上买东西，让她在老槐树下等着。", "他们再也没有回来。", "她在树下等了一夜。第二天，她也不见了。", "没有人去找她。", "村里最老的人说过一句话：", "“那棵树下面没有东西。那棵树就是小晚。她自己把自己困在那里了。”", "小晚的爷爷在她失踪前几个月去世了。", "她是不是在等爷爷？"],
+        ["📎 念念的补充笔记（四）", "我找到了一些关于小晚爷爷的线索。", "小晚的爷爷叫老陈。", "他走的那天，小晚送他到村口。", "他说：“小晚，爷爷去那边看看，很快就回来。”", "他再也没有回来。", "但有人说，老陈死后，有人在老槐树下见过他。", "不是人。是影子。", "他的影子站在树下，面朝村里，一动不动。", "他在等什么？还是说——他一直在？"],
+        ["📎 念念的补充笔记（五）", "这些事是我后来才想明白的。", "1997年8月15日，归途执行。", "它带走了我的爸妈和妹妹。留下了我。", "我被留下了。", "归途给了我一个信息：写日记，否则就会忘记最重要的人。", "我害怕忘记妹妹的脸。所以我写了。", "这是我的日记。你正在看的这本。", "有人说，如果你去那棵树下，对小晚说“你不是一个人”，她就会停下来。", "我不知道。我没有试过。我害怕。"]
+    ];
+
+    // 构建所有页面
+    const allPages = [];
+    // 第1页：封面
+    allPages.push({ type: 'cover', lines: [] });
+    // 第2-21页：主线日记
+    for (let i = 0; i < mainDiaryLines.length; i++) {
+        let stage = '';
+        let pageNum = i + 2;
+        if (pageNum === 16) stage = 'stage1';
+        else if (pageNum === 17) stage = 'stage2';
+        else if (pageNum === 18) stage = 'stage3';
+        else if (pageNum === 19) stage = 'stage4';
+        else if (pageNum === 20) stage = 'stage5';
+        else if (pageNum === 21) stage = 'stage6';
+        else stage = 'normal';
+        allPages.push({ type: stage, lines: mainDiaryLines[i] });
+    }
+    // 第22-26页：补充页
+    for (let i = 0; i < supplementLines.length; i++) {
+        allPages.push({ type: 'supplement', lines: supplementLines[i] });
+    }
+
+    let currentPage = 1;
+    const totalPages = allPages.length;
+
+    function renderLine(line, pageNum, isStage5) {
+        if (!line) return '';
+        let displayLine = line;
+        // 第19页处理划掉的句子
+        if (pageNum === 19 && line === '“小晚，爷爷在。”') {
+            displayLine = `<span class="strikethrough">“小晚，爷爷在。”</span>`;
+        }
+        // 第21页处理网址
+        if (pageNum === 21 && line === 'www.back-to-1997.com') {
+            displayLine = `<span style="color: #ff8888; text-decoration: underline;">www.back-to-1997.com</span>`;
+        }
+        // 第20页添加抖动效果
+        if (isStage5) {
+            return `<div class="diary-line shake-text">${displayLine}</div>`;
+        }
+        return `<div class="diary-line">${displayLine}</div>`;
+    }
+
+    function renderPage() {
+        const container = document.getElementById('diaryPages');
+        const page = allPages[currentPage - 1];
+        
+        let baseClass = '';
+        let isCover = (currentPage === 1);
+        
+        if (isCover) {
+            baseClass = 'cover-page';
+        } else if (page.type === 'supplement') {
+            baseClass = 'supplement-page';
+        } else if (page.type === 'stage1') {
+            baseClass = 'stage1';
+        } else if (page.type === 'stage2') {
+            baseClass = 'stage2';
+        } else if (page.type === 'stage3') {
+            baseClass = 'stage3';
+        } else if (page.type === 'stage4') {
+            baseClass = 'stage4';
+        } else if (page.type === 'stage5') {
+            baseClass = 'stage5';
+        } else if (page.type === 'stage6') {
+            baseClass = 'stage6';
+        } else {
+            baseClass = '';
+        }
+        
+        let pageTypeName = '';
+        if (currentPage === 1) {
+            pageTypeName = '封面';
+        } else if (currentPage >= 2 && currentPage <= 21) {
+            pageTypeName = `第 ${currentPage - 1} 页`;
+        } else {
+            pageTypeName = `补充笔记 ${currentPage - 21}`;
+        }
+        
+        let contentHtml = '';
+        if (isCover) {
+            contentHtml = `<div class="cover-title">归途</div><div class="cover-sub">念念的日记</div>`;
+        } else {
+            const isStage5 = (page.type === 'stage5');
+            for (let i = 0; i < page.lines.length; i++) {
+                contentHtml += renderLine(page.lines[i], currentPage, isStage5);
+            }
+        }
+        
+        container.innerHTML = `<div class="diary-page ${baseClass}" style="position:relative;">${contentHtml}<div class="page-number">— ${pageTypeName} —</div></div>`;
+        
+        document.getElementById('pageIndicator').innerHTML = `第 ${currentPage} / ${totalPages} 页`;
+        document.getElementById('pageNum').value = currentPage;
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function changePage(delta) {
+        let newPage = currentPage + delta;
+        if (newPage < 1) newPage = 1;
+        if (newPage > totalPages) newPage = totalPages;
+        currentPage = newPage;
+        renderPage();
+    }
+
+    function jumpToPage() {
+        let target = parseInt(document.getElementById('pageNum').value);
+        if (isNaN(target)) target = 1;
+        if (target < 1) target = 1;
+        if (target > totalPages) target = totalPages;
+        currentPage = target;
+        renderPage();
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') changePage(-1);
+        else if (e.key === 'ArrowRight') changePage(1);
+    });
+
+    renderPage();
+</script>
+</body>
+</html>
